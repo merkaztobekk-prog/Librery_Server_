@@ -5,9 +5,10 @@ import { RouterLink } from '@angular/router';
 
 interface User {
   email: string;
+  role: string;
+  status: string;
   is_admin: boolean;
   is_active: boolean;
-  online_status: boolean;
 }
 
 @Component({
@@ -19,9 +20,7 @@ interface User {
 })
 export class AdminUsersComponent {
   users: User[] = [];
-  flashMessages: { type: string; text: string }[] = [];
-  page = 1;
-  totalPages = 1;
+  flashMessages: { type: 'success' | 'error'; text: string }[] = [];
   currentUserEmail = localStorage.getItem('email') || '';
 
   constructor(private http: HttpClient) {}
@@ -30,14 +29,12 @@ export class AdminUsersComponent {
     this.loadUsers();
   }
 
-  loadUsers(page: number = 1) {
+  loadUsers() {
     this.http
-      .get<any>(`http://localhost:8000/admin/users?page=${page}`, { withCredentials: true })
+      .get<any>('http://localhost:8000/admin/users', { withCredentials: true })
       .subscribe({
         next: (res) => {
           this.users = res.users || [];
-          this.page = res.page || 1;
-          this.totalPages = res.total_pages || 1;
         },
         error: (err) => {
           console.error(err);
@@ -46,17 +43,13 @@ export class AdminUsersComponent {
       });
   }
 
-  loadPage(page: number) {
-    this.loadUsers(page);
-  }
-
   toggleRole(email: string) {
     this.http
       .post(`http://localhost:8000/admin/toggle-role/${email}`, {}, { withCredentials: true })
       .subscribe({
         next: () => {
           this.flashMessages = [{ type: 'success', text: 'Role updated successfully.' }];
-          this.loadUsers(this.page);
+          this.loadUsers();
         },
         error: () => {
           this.flashMessages = [{ type: 'error', text: 'Failed to update role.' }];
@@ -70,7 +63,7 @@ export class AdminUsersComponent {
       .subscribe({
         next: () => {
           this.flashMessages = [{ type: 'success', text: 'Status updated successfully.' }];
-          this.loadUsers(this.page);
+          this.loadUsers();
         },
         error: () => {
           this.flashMessages = [{ type: 'error', text: 'Failed to update status.' }];
