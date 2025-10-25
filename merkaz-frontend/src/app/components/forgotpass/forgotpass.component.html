@@ -1,11 +1,9 @@
 <div class="container">
   <h1>Forgot Password</h1>
 
-  <!-- הודעות מערכת -->
   <div *ngIf="message" class="flash-success">{{ message }}</div>
   <div *ngIf="error" class="flash-error">{{ error }}</div>
 
-  <!-- טופס שליחת מייל -->
   <form (ngSubmit)="onSubmit()" #forgotForm="ngForm">
     <input
       type="email"
@@ -20,7 +18,6 @@
     </button>
   </form>
 
-  <!-- קישור חזרה להתחברות -->
   <p>
     <a routerLink="/login">Back to Login</a>
   </p>
